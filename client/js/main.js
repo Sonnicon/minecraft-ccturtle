@@ -3,18 +3,18 @@ initializeWebsocket()
 
 function initializeWebsocket(){
     if(websocket != null){
-        websocket.close
+        websocket.close()
     }
     return websocket = new WebSocket("ws://localhost:17798", "control")
 }
 
 const typeHandlers = {
     "turtleCreated": function(obj){
-        var turtle = new Turtle(obj.id, obj.x, obj.z, obj.y, obj.rotation)
+        var turtle = new Turtle(obj.id, obj.value.x, obj.value.z, obj.value.y, obj.value.rotation)
     },
 
     "movedBy": function(obj){
-        Turtle.turtles[obj.id].moveBy(obj)    
+        Turtle.turtles[obj.id].movedBy(obj.value)    
     },
 
     "rotatedTowards": function(obj){
@@ -25,11 +25,11 @@ const typeHandlers = {
 websocket.addEventListener("message", function (event) {
     console.log("Message from server ", event.data);
     var json = JSON.parse(event.data)
-    typeHandlers[json.type](json.value)
+    typeHandlers[json.type](json)
 });
 
 function texteval(){
-    var map = {"type": "evaluate",
+    var map = {"type": "evaluate", "id": 0,
         "value": document.getElementById("text-eval").value}
     send(JSON.stringify(map))
 }

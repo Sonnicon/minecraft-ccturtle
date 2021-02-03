@@ -42,7 +42,7 @@ class Turtle {
     }
 
     moveBy(x, z, y){
-        var data = JSON.stringify({"type": "moveBy", "value": {"id": this.#id, "x": x, "z": z, "y": y}})
+        var data = JSON.stringify({"type": "moveBy", "id": this.#id, "value": {"x": x, "z": z, "y": y}})
         send(data)
     }
 
