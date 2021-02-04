@@ -7,7 +7,7 @@ if not socket then
 end
 print("Socket connected")
 
-x, z, y, rotation = 0, 0, 0, 0
+x, z, y, rotation, currentid = 0, 0, 0, 0
 
 options = {
     setPosition = function(value)
@@ -25,17 +25,20 @@ options = {
         else
             ret = e
         end
-        socket.send("evaluate", ret)
+        if value == nil then
+            value = {}
+        end
+
+        send("evaluate", ret)
     end,
 
     moveBy = function(value)
-        local movedx, movedz, movedy = 0, 0, 0
+        local movedx, movedz, movedy, startRotation = 0, 0, 0, rotation
         while value.y ~= movedy do
             if value.y > movedy then
                 if turtle.detectUp() then
                     break
                 end
-                print(2)
                 turtle.up()
                 movedy = movedy + 1
             else
@@ -47,13 +50,37 @@ options = {
             end
         end
 
-        if value.x ~= 0 then
-            if value.x > 0 then
-
+        if value.x > 0 then
+            rotateTowards(1)
+        elseif value.x < 0 then
+            rotateTowards(3)
+        end
+        while value.x ~= movedx do
+            if turtle.detect() then
+                break
             end
+            turtle.forward()
+            movedx = movedx - (rotation - 2)
         end
 
-        send("movedBy", {movedx = movedx, movedy = movedy})
+        if value.z > 0 then
+            rotateTowards(2)
+        elseif value.z < 0 then
+            rotateTowards(0)
+        end
+        while value.z ~= movedz do
+            if turtle.detect() then
+                break
+            end
+            turtle.forward()
+            movedz = movedz + (rotation - 1)
+        end
+        rotateTowards(startRotation)
+
+        x = x + movedx
+        z = z + movedz
+        y = y + movedy
+        send("movedBy", {x = movedx, z = movedz, y = movedy})
     end,
 
     rotateTowards = function(value)
@@ -81,20 +108,21 @@ function rotateTowards(target)
             rotation = math.fmod(rotation + 3, 4)
         end 
     end
-
-    print(clockwise)
 end
 
-function send(type, value)
-    socket.send(json.encode({type = type, value = value}))
+send = function(type, value)
+    socket.send(json.encode({type = type, id = currentid, value = value}))
 end
 
 while true do
     local msg, ignored = socket.receive()
-    local object = json.decode(msg)
+    if msg then
+        local object = json.decode(msg)
 
-    local f = options[object.type]
-    if f then
-        f(object.value)
+        local f = options[object.type]
+        if f then
+            currentid = object.id
+            f(object.value)
+        end
     end
 end
