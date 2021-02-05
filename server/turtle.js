@@ -41,7 +41,8 @@ class Turtle {
             console.log("received from turtle %s: %s", id, message);
             var obj = JSON.parse(message)
             Turtle.handlePacket(id, obj)
-            User.User.sendUser(obj.id, message)
+            obj.id = id
+            User.User.sendAllUsers(JSON.stringify(obj))
         });
         
         this.send(JSON.stringify({"type": "setPosition", "value": {"x": this.#x, "z": this.#z, "y": this.#y, "rotation": this.#rotation}}))

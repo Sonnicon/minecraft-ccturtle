@@ -5,24 +5,29 @@ class Turtle {
     #y
     // 0 - North (-z), 1 - East (+x), 2 - South (+z), 3 - West (-x)
     #rotation
+    #box
 
     static turtles = {}
 
     constructor(id, x, z, y, rotation){
         this.#id = id
-        this.#x = x
-        this.#z = z
-        this.#y = y
-        this.#rotation = rotation
+        this.#box = graphicsAddTurtle()
+        this.setLocation(x, z, y, rotation)
 
         Turtle.turtles[id] = this
     }
 
     setLocation(obj){
-        this.#x = obj.x
-        this.#z = obj.z
-        this.#y = obj.y
-        this.#rotation = obj.rotation
+        this.setLocation(obj.x, obj.y, obj.z)
+    }
+
+    setLocation(x, z, y, rotation){
+        this.#x = x
+        this.#z = z
+        this.#y = y
+        this.#box.position.set(x, y, z)
+        this.setRotation(rotation)
+        render()
     }
 
     setRotation(rotation){
@@ -50,5 +55,7 @@ class Turtle {
         this.#x += obj.x
         this.#z += obj.z
         this.#y += obj.y
+        this.#box.translate(obj.x, obj.y, obj.z)
+        render()
     }
 }

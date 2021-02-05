@@ -7,7 +7,7 @@ if not socket then
 end
 print("Socket connected")
 
-x, z, y, rotation, currentid = 0, 0, 0, 0
+x, z, y, rotation = 0, 0, 0
 
 options = {
     setPosition = function(value)
@@ -111,7 +111,7 @@ function rotateTowards(target)
 end
 
 send = function(type, value)
-    socket.send(json.encode({type = type, id = currentid, value = value}))
+    socket.send(json.encode({type = type, value = value}))
 end
 
 while true do
@@ -121,7 +121,6 @@ while true do
 
         local f = options[object.type]
         if f then
-            currentid = object.id
             f(object.value)
         end
     end

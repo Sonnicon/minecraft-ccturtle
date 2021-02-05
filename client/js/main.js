@@ -14,6 +14,7 @@ const typeHandlers = {
     },
 
     "movedBy": function(obj){
+        console.log("movedBy")
         Turtle.turtles[obj.id].movedBy(obj.value)    
     },
 
