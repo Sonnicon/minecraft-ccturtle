@@ -58,4 +58,9 @@ class Turtle {
         this.#box.translate(obj.x, obj.y, obj.z)
         render()
     }
+
+    remove(){
+        this.#box.dispose()
+        delete Turtle.turtles[this.#id]
+    }
 }

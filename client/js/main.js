@@ -13,6 +13,10 @@ const typeHandlers = {
         var turtle = new Turtle(obj.id, obj.value.x, obj.value.z, obj.value.y, obj.value.rotation)
     },
 
+    "turtleRemoved": function(obj){
+        Turtle.turtles[obj.value].remove()
+    },
+
     "movedBy": function(obj){
         console.log("movedBy")
         Turtle.turtles[obj.id].movedBy(obj.value)    

@@ -5,6 +5,7 @@ const User = require("./user")
 const socket = new WebSocket.Server({ port: 17798 });
 
 socket.on("connection", function connection(ws) {
+    console.log("New connection")
     if(ws.protocol == "control"){
         var user = new User.User(ws)
     }else{

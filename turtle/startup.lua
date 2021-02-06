@@ -1,15 +1,16 @@
-shell.run("pastebin","get","4nRg9CHU","json")
+address = "ws://localhost:17798"
+shell.run("pastebin", "get", "4nRg9CHU", "json")
 os.loadAPI("json")
 
-local socket, err = http.websocket("ws://localhost:17798")
-if not socket then
-    error(err)
-end
-print("Socket connected")
-
 x, z, y, rotation = 0, 0, 0
+sinceLastConnected = 9999
 
 options = {
+    ping = function(value)
+        sinceLastConnected = 0
+        send("pong", nil)
+    end,
+
     setPosition = function(value)
         x = value.x
         z = value.z
@@ -114,14 +115,36 @@ send = function(type, value)
     socket.send(json.encode({type = type, value = value}))
 end
 
-while true do
-    local msg, ignored = socket.receive()
-    if msg then
-        local object = json.decode(msg)
+function receive()
+    local msg, ignored = socket.receive(20)
+    return msg
+end
 
+while true do
+    while not socket do
+        socket, err = http.websocket(address)
+        if socket then
+            sinceLastConnected = 0
+            print("Socket connected")
+        else
+            sinceLastConnected = 9999
+            print(err)
+            os.sleep(10)
+        end
+    end
+    local success, msg = pcall(receive)
+    if msg and success then
+        local object = json.decode(msg)
         local f = options[object.type]
         if f then
             f(object.value)
         end
+    elseif not success then
+        sinceLastConnected = 9999
+    end
+    if sinceLastConnected > 10 then
+        print("Socket disconnected")
+        socket.close()
+        socket = nil
     end
 end

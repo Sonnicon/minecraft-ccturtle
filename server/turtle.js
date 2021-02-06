@@ -14,14 +14,24 @@ class Turtle {
     static nextid = 0
     static turtles = {}
 
+    //pinging
+    #pong = true
+
     static #packetHandlers = {
+        "pong": function(turtle, obj){
+            turtle.pong()
+            return false
+        },
+
         "movedBy": function(turtle, obj){
             var pos = turtle.getPosition()
             turtle.#setPosition(obj.x + pos.x, obj.z + pos.z, obj.y + pos.y)
+            return true
         },
 
         "rotatedTowards": function(turtle, obj){
             turtle.#setRotation(obj.value)
+            return true
         }
     }
 
@@ -40,9 +50,10 @@ class Turtle {
         connection.on("message", function incoming(message) {
             console.log("received from turtle %s: %s", id, message);
             var obj = JSON.parse(message)
-            Turtle.handlePacket(id, obj)
-            obj.id = id
-            User.User.sendAllUsers(JSON.stringify(obj))
+            if(Turtle.handlePacket(id, obj)){
+                obj.id = id
+                User.User.sendAllUsers(JSON.stringify(obj))
+            }
         });
         
         this.send(JSON.stringify({"type": "setPosition", "value": {"x": this.#x, "z": this.#z, "y": this.#y, "rotation": this.#rotation}}))
@@ -90,8 +101,35 @@ class Turtle {
     }
 
     send(obj){
+        console.log(obj)
         this.#connection.send(obj)
     }
+
+    ping(){
+        if(this.#pong){
+            this.#pong = false
+            this.send(JSON.stringify({"type": "ping"}))
+        }else{
+            console.log("Lost connection to turtle %i", this.#id)
+            this.remove()
+        }
+        
+    }
+
+    pong(){
+        this.#pong = true
+    }
+
+    remove(){
+        delete Turtle.turtles[this.#id]
+        User.User.sendAllUsers({"type": "turtleRemoved", "value": this.#id})
+    }
 }
+
+setInterval(function(){
+    for(var key in Turtle.turtles){
+        Turtle.turtles[key].ping()
+    }
+}, 10000)
 
 module.exports.Turtle = Turtle
