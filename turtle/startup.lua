@@ -97,7 +97,7 @@ function rotateTowards(target)
 
     local clockwise = (target > rotation)
     if math.abs(target - rotation) == 3 then
-        clockwise = false
+        clockwise = (target - rotation) == -3
     end
 
     while target ~= rotation do
