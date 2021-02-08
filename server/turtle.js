@@ -50,7 +50,9 @@ class Turtle {
         connection.on("message", function incoming(message) {
             console.log("received from turtle %s: %s", id, message);
             var obj = JSON.parse(message)
+            console.log(1)
             if(Turtle.handlePacket(id, obj)){
+                console.log(2)
                 obj.id = id
                 User.User.sendAllUsers(JSON.stringify(obj))
             }
@@ -65,7 +67,7 @@ class Turtle {
     }
 
     static handlePacket(id, obj){
-        Turtle.#packetHandlers[obj.type](Turtle.turtles[id], obj.value)
+        return Turtle.#packetHandlers[obj.type](Turtle.turtles[id], obj.value)
     }
 
     getId(){
@@ -101,7 +103,6 @@ class Turtle {
     }
 
     send(obj){
-        console.log(obj)
         this.#connection.send(obj)
     }
 
@@ -113,7 +114,6 @@ class Turtle {
             console.log("Lost connection to turtle %i", this.#id)
             this.remove()
         }
-        
     }
 
     pong(){
@@ -122,7 +122,7 @@ class Turtle {
 
     remove(){
         delete Turtle.turtles[this.#id]
-        User.User.sendAllUsers({"type": "turtleRemoved", "value": this.#id})
+        User.User.sendAllUsers(JSON.stringify({"type": "turtleRemoved", "value": this.#id}))
     }
 }
 

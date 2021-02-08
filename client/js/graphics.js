@@ -1,22 +1,33 @@
 const div = document.getElementById("controls")
-const width = window.innerWidth, height = window.innerHeight - div.offsetHeight - div.offsetTop * 2 - 1
+var scene, camera, renderer
+var loaded = false
+const geometry = new THREE.BoxGeometry(), material = new THREE.MeshBasicMaterial({color: 0xFFFF00})
 
-const scene = new THREE.Scene()
-const camera = new THREE.PerspectiveCamera(120, width / height, 0.1, 100)
-const renderer = new THREE.WebGLRenderer()
-renderer.setSize(width, height)
-document.body.appendChild(renderer.domElement)
+function init(){
+    if(loaded){
+        renderer.dispose()
+        scene.dispose()
+    }
+    this.loaded = true
+    
+    const width = window.innerWidth, height = window.innerHeight - div.offsetHeight - div.offsetTop * 2 - 1
+    scene = new THREE.Scene()
+    camera = new THREE.PerspectiveCamera(120, width / height, 0.1, 100)
+    renderer = new THREE.WebGLRenderer()
+    renderer.setSize(width, height)
+    document.body.appendChild(renderer.domElement)
 
-const geometry = new THREE.BoxGeometry()
-const material = new THREE.MeshBasicMaterial({color: 0xFFFF00})
-
-camera.position.z = 5
+    camera.position.z = 5
+    render();
+}
 
 function render() {
     requestAnimationFrame(render);
 	renderer.render(scene, camera);
 }
-render();
+
+init()
+
 
 function graphicsAddTurtle(){
     var box = new THREE.Mesh(geometry, material)

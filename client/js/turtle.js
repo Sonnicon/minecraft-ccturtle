@@ -55,12 +55,12 @@ class Turtle {
         this.#x += obj.x
         this.#z += obj.z
         this.#y += obj.y
-        this.#box.translate(obj.x, obj.y, obj.z)
+        this.#box.position.set(this.#x, this.#y, this.#z)
         render()
     }
 
     remove(){
-        this.#box.dispose()
+        scene.remove(this.#box)
         delete Turtle.turtles[this.#id]
     }
 }
