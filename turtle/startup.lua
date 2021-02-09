@@ -87,6 +87,31 @@ options = {
     rotateTowards = function(value)
         rotateTowards(value)
         send("rotatedTowards", rotation)
+    end,
+
+    inspectAround = function(value)
+        local blocks = {}
+        
+        local found, v = turtle.inspectUp()
+        if not found then
+            v = nil
+        end
+        table.insert(blocks, {x = x, z = z, y = y + 1, value = v})
+        found, v = turtle.inspectDown()
+        if not found then
+            v = nil
+        end
+        table.insert(blocks, {x = x, z = z, y = y - 1, value = v})
+
+        for i = 1, 4 do
+            found, v = turtle.inspect()
+            if not found then
+                v = nil 
+            end
+            table.insert(blocks, {x = x + (-rotation+2)%2, z = z + (rotation-1)%2, y = y, value = v})
+            turtle.turnRight()
+        end
+        send("inspectedAround", blocks)
     end
 }
 
