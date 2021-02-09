@@ -24,6 +24,10 @@ const typeHandlers = {
 
     "rotatedTowards": function(obj){
         Turtle.turtles[obj.id].setRotation(obj.value)
+    },
+
+    "inspectedAround": function(obj){
+
     }
 }
 

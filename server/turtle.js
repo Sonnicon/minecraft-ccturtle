@@ -32,6 +32,10 @@ class Turtle {
         "rotatedTowards": function(turtle, obj){
             turtle.#setRotation(obj.value)
             return true
+        },
+
+        "inspectedAround": function(turtle, obj){
+            return true
         }
     }
 
